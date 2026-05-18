@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kuis Rantai Ekonomi Kelas 7 (Tampilan Besar)</title>
+    <title>Kuis Rantai Ekonomi Kelas 7 (Otomatis Berurutan)</title>
     <style>
       * {
         box-sizing: border-box;
@@ -61,6 +61,8 @@
         text-align: center;
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         border-bottom: 5px solid #ccc;
+        transition: all 0.3s ease;
+        position: relative;
       }
 
       #team-1 {
@@ -76,6 +78,26 @@
         border-bottom-color: #16a085;
       }
 
+      /* Gaya untuk Tim yang sedang aktif/mendapat giliran */
+      .team-box.active {
+        transform: scale(1.05);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        background-color: #fffde7;
+        border-top: 4px solid #f1c40f;
+      }
+
+      .turn-indicator {
+        display: none;
+        font-size: 0.8rem;
+        color: #f39c12;
+        font-weight: bold;
+        margin-top: 5px;
+      }
+
+      .team-box.active .turn-indicator {
+        display: block;
+      }
+
       .team-name {
         font-size: 1.1rem;
         font-weight: bold;
@@ -87,29 +109,6 @@
         font-size: 2rem;
         font-weight: bold;
         color: #2c3e50;
-        margin-bottom: 10px;
-      }
-
-      .score-control {
-        display: flex;
-        gap: 5px;
-        justify-content: center;
-      }
-
-      .btn-score {
-        padding: 5px 12px;
-        font-size: 0.9rem;
-        font-weight: bold;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-        color: white;
-      }
-      .btn-plus {
-        background-color: #2ecc71;
-      }
-      .btn-minus {
-        background-color: #95a5a6;
       }
 
       /* Grid Kotak Angka */
@@ -161,7 +160,7 @@
         text-shadow: none;
       }
 
-      /* Pop-up Modal Soal Ukuran Besar (Full View) */
+      /* Pop-up Modal Soal Ukuran Besar */
       .modal {
         display: none;
         position: fixed;
@@ -199,14 +198,15 @@
       }
 
       #modal-title {
-        font-size: 1.8rem;
-        color: #7f8c8d;
+        font-size: 1.6rem;
+        color: #e67e22;
+        font-weight: bold;
         border-bottom: 2px solid #ecf0f1;
         padding-bottom: 10px;
       }
 
       #modal-question {
-        font-size: 2.2rem; /* Ukuran tulisan soal dibuat sangat besar */
+        font-size: 2.2rem;
         font-weight: bold;
         margin: 40px 0;
         line-height: 1.5;
@@ -223,7 +223,7 @@
 
       .btn-choice {
         padding: 20px 50px;
-        font-size: 1.8rem; /* Ukuran teks tombol besar */
+        font-size: 1.8rem;
         font-weight: bold;
         border: none;
         border-radius: 15px;
@@ -303,56 +303,28 @@
   <body>
     <header>
       <h1>Kuis Rantai Ekonomi Kelas 7</h1>
-      <p>Klik kotak angka untuk memunculkan soal ukuran besar!</p>
+      <p>Kotak kuning di atas menandakan tim yang gilirannya menjawab!</p>
 
       <div class="scoreboard-container">
-        <div class="team-box" id="team-1">
+        <div class="team-box active" id="team-1">
           <div class="team-name">Kelompok 1</div>
           <div class="team-score" id="score-team-1">0</div>
-          <div class="score-control">
-            <button class="btn-score btn-minus" onclick="changeScore(1, -10)">
-              -10
-            </button>
-            <button class="btn-score btn-plus" onclick="changeScore(1, 10)">
-              +10
-            </button>
-          </div>
+          <div class="turn-indicator">★ GILIRAN MENJAWAB ★</div>
         </div>
         <div class="team-box" id="team-2">
           <div class="team-name">Kelompok 2</div>
           <div class="team-score" id="score-team-2">0</div>
-          <div class="score-control">
-            <button class="btn-score btn-minus" onclick="changeScore(2, -10)">
-              -10
-            </button>
-            <button class="btn-score btn-plus" onclick="changeScore(2, 10)">
-              +10
-            </button>
-          </div>
+          <div class="turn-indicator">★ GILIRAN MENJAWAB ★</div>
         </div>
         <div class="team-box" id="team-3">
           <div class="team-name">Kelompok 3</div>
           <div class="team-score" id="score-team-3">0</div>
-          <div class="score-control">
-            <button class="btn-score btn-minus" onclick="changeScore(3, -10)">
-              -10
-            </button>
-            <button class="btn-score btn-plus" onclick="changeScore(3, 10)">
-              +10
-            </button>
-          </div>
+          <div class="turn-indicator">★ GILIRAN MENJAWAB ★</div>
         </div>
         <div class="team-box" id="team-4">
           <div class="team-name">Kelompok 4</div>
           <div class="team-score" id="score-team-4">0</div>
-          <div class="score-control">
-            <button class="btn-score btn-minus" onclick="changeScore(4, -10)">
-              -10
-            </button>
-            <button class="btn-score btn-plus" onclick="changeScore(4, 10)">
-              +10
-            </button>
-          </div>
+          <div class="turn-indicator">★ GILIRAN MENJAWAB ★</div>
         </div>
       </div>
     </header>
@@ -448,6 +420,7 @@
       ];
 
       const teamScores = { 1: 0, 2: 0, 3: 0, 4: 0 };
+      let currentTeamTurn = 1; // Permainan dimulai dari Tim 1
       const colors = [
         "#FF5733",
         "#2bc48a",
@@ -516,13 +489,6 @@
         }
       }
 
-      function changeScore(teamId, points) {
-        teamScores[teamId] += points;
-        if (teamScores[teamId] < 0) teamScores[teamId] = 0;
-        document.getElementById(`score-team-${teamId}`).innerText =
-          teamScores[teamId];
-      }
-
       // Generate Grid
       const grid = document.getElementById("quiz-grid");
       quizData.forEach((data, index) => {
@@ -547,7 +513,7 @@
 
         const modalInside = document.getElementById("modal-inside");
         modalInside.innerHTML = `
-                <div id="modal-title">PERTANYAAN NOMOR ${index + 1}</div>
+                <div id="modal-title">PERTANYAAN UNTUK KELOMPOK ${currentTeamTurn}</div>
                 <div id="modal-question">${quizData[index].q}</div>
                 <div class="btn-container">
                     <button class="btn-choice btn-true" onclick="checkAnswer(event, 'Benar')">BENAR</button>
@@ -558,25 +524,30 @@
         document.getElementById("quiz-modal").style.display = "flex";
       }
 
-      // Cek Jawaban di dalam Pop-up
+      // Cek Jawaban otomatis
       function checkAnswer(event, playerAnswer) {
         const correctAnswer = quizData[currentQuestionIndex].a;
         const modalInside = document.getElementById("modal-inside");
-        const card = document.getElementById(`card-${currentQuestionIndex}`);
 
         if (playerAnswer === correctAnswer) {
           playSound("correct");
           createConfetti(event);
+
+          // Tambah skor ke tim aktif secara otomatis
+          teamScores[currentTeamTurn] += 10;
+          document.getElementById(`score-team-${currentTeamTurn}`).innerText =
+            teamScores[currentTeamTurn];
+
           modalInside.innerHTML = `
                     <div class="feedback-text feedback-correct">🎉 JAWABAN BENAR!</div>
-                    <p style="font-size:1.2rem; color:#7f8c8d;">Berikan poin pada tim yang menjawab.</p>
+                    <p style="font-size:1.4rem; color:#2c3e50;">Kelompok ${currentTeamTurn} mendapat +10 Poin!</p>
                     <button class="btn-next" onclick="closeModal(true)">Lanjutkan</button>
                 `;
         } else {
           playSound("wrong");
           modalInside.innerHTML = `
                     <div class="feedback-text feedback-wrong">❌ JAWABAN SALAH</div>
-                    <p style="font-size:1.2rem; color:#7f8c8d;">Kesempatan beralih atau lanjut ke tim berikutnya.</p>
+                    <p style="font-size:1.4rem; color:#2c3e50;">Kelompok ${currentTeamTurn} tidak mendapat poin.</p>
                     <button class="btn-next" onclick="closeModal(false)">Lanjutkan</button>
                 `;
         }
@@ -588,7 +559,17 @@
         card.style.backgroundColor = isCorrect ? "#2ecc71" : "#e74c3c";
         card.innerText = isCorrect ? "✅" : "❌";
 
+        // Sembunyikan pop-up
         document.getElementById("quiz-modal").style.display = "none";
+
+        // Pindahkan giliran ke tim berikutnya secara berurutan (1 -> 2 -> 3 -> 4 -> 1)
+        document
+          .getElementById(`team-${currentTeamTurn}`)
+          .classList.remove("active");
+        currentTeamTurn = currentTeamTurn === 4 ? 1 : currentTeamTurn + 1;
+        document
+          .getElementById(`team-${currentTeamTurn}`)
+          .classList.add("active");
       }
     </script>
   </body>
