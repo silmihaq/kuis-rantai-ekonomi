@@ -24,7 +24,6 @@
       }
 
       body {
-        /* Latar belakang dengan efek gradien lembut dan pola abstrak */
         background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
         background-attachment: fixed;
         color: #2d3436;
@@ -36,7 +35,6 @@
         font-family: var(--font-secondary);
       }
 
-      /* Dekorasi Latar Belakang (Abstract Shapes) */
       body::before {
         content: "";
         position: fixed;
@@ -85,7 +83,6 @@
         font-weight: 500;
       }
 
-      /* Papan Skor 4 Kelompok */
       .scoreboard-container {
         display: grid;
         grid-template-columns: repeat(4, 1fr);
@@ -171,7 +168,6 @@
         color: #2c3e50;
       }
 
-      /* Grid Kotak Angka */
       .grid-container {
         display: grid;
         grid-template-columns: repeat(5, 1fr);
@@ -219,7 +215,6 @@
         text-shadow: none;
       }
 
-      /* Modal / Pop-up Soal */
       .modal {
         display: none;
         position: fixed;
@@ -273,7 +268,6 @@
         color: #2c3e50;
       }
 
-      /* Tombol Pilihan Jumbo */
       .btn-container {
         display: flex;
         gap: 20px;
@@ -342,7 +336,6 @@
         margin-top: 20px;
       }
 
-      /* Efek Kembang Api */
       .particle {
         position: fixed;
         width: 12px;
@@ -503,9 +496,22 @@
       ];
       let currentQuestionIndex = null;
 
-      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      // Inisialisasi Audio Context ditunda sampai ada klik pertama
+      let audioCtx = null;
+
+      function initAudio() {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        // Aktifkan kembali jika sempat tertidur oleh browser
+        if (audioCtx.state === "suspended") {
+          audioCtx.resume();
+        }
+      }
 
       function playSound(type) {
+        initAudio(); // Pastikan audio context siap digunakan
+
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
         osc.connect(gain);
