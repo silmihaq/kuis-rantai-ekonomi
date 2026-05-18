@@ -397,6 +397,7 @@
     </div>
 
     <script>
+      // Total soal dikurangi menjadi tepat 15 Soal
       const quizData = [
         {
           q: "Permintaan adalah jumlah barang yang ingin dan mampu dibeli oleh konsumen.",
@@ -435,7 +436,7 @@
           a: "Benar",
         },
         {
-          q: "Permintaan absolut adalah permintaan yang sudah disertai dengan uang dan daya beli.",
+          q: "Permintaan absolut adalah permintaan yang sudah disertai dengan uang and daya beli.",
           a: "Salah",
         },
         {
@@ -458,26 +459,6 @@
           q: "Menggunakan mesin canggih untuk membuat cilok dapat meningkatkan jumlah penawaran barang.",
           a: "Benar",
         },
-        {
-          q: "Bencana alam seperti banjir dapat menyebabkan penawaran hasil pertanian di pasar meningkat.",
-          a: "Salah",
-        },
-        {
-          q: "Jika harga pasar berada di bawah harga keseimbangan, maka akan terjadi kelangkaan barang.",
-          a: "Benar",
-        },
-        {
-          q: "Menimbun barang pokok saat langka agar bisa dijual mahal termasuk contoh perilaku ekonomi yang adil.",
-          a: "Salah",
-        },
-        {
-          q: "Membayar gorengan di kantin sesuai jumlah yang kita makan adalah wujud perilaku jujur dan anti-korupsi.",
-          a: "Benar",
-        },
-        {
-          q: "Jika pedagang mengurangi timbangan saat menjual barang, maka suasana pasar akan tetap stabil dan aman.",
-          a: "Salah",
-        },
       ];
 
       const teamScores = { 1: 0, 2: 0, 3: 0, 4: 0 };
@@ -496,21 +477,19 @@
       ];
       let currentQuestionIndex = null;
 
-      // Inisialisasi Audio Context ditunda sampai ada klik pertama
       let audioCtx = null;
 
       function initAudio() {
         if (!audioCtx) {
           audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         }
-        // Aktifkan kembali jika sempat tertidur oleh browser
         if (audioCtx.state === "suspended") {
           audioCtx.resume();
         }
       }
 
       function playSound(type) {
-        initAudio(); // Pastikan audio context siap digunakan
+        initAudio();
 
         const osc = audioCtx.createOscillator();
         const gain = audioCtx.createGain();
