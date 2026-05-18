@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kuis Rantai Ekonomi Kelas 7</title>
+    <title>Kuis Rantai Ekonomi Kelas 7 (Tampilan Besar)</title>
     <style>
       * {
         box-sizing: border-box;
@@ -24,7 +24,9 @@
 
       header {
         text-align: center;
-        margin-bottom: 30px;
+        margin-bottom: 25px;
+        width: 100%;
+        max-width: 1100px;
       }
 
       header h1 {
@@ -37,26 +39,87 @@
         font-size: 1.1rem;
       }
 
-      .score-board {
-        margin-top: 15px;
-        font-size: 1.5rem;
-        font-weight: bold;
-        background-color: #fff;
-        padding: 10px 20px;
-        border-radius: 50px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        color: #2980b9;
-        display: inline-block;
+      /* Papan Skor 4 Kelompok */
+      .scoreboard-container {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+        width: 100%;
+        margin-top: 20px;
       }
 
-      /* Grid Utama */
+      @media (max-width: 600px) {
+        .scoreboard-container {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      .team-box {
+        background-color: white;
+        padding: 15px;
+        border-radius: 15px;
+        text-align: center;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-bottom: 5px solid #ccc;
+      }
+
+      #team-1 {
+        border-bottom-color: #3498db;
+      }
+      #team-2 {
+        border-bottom-color: #e67e22;
+      }
+      #team-3 {
+        border-bottom-color: #9b59b6;
+      }
+      #team-4 {
+        border-bottom-color: #16a085;
+      }
+
+      .team-name {
+        font-size: 1.1rem;
+        font-weight: bold;
+        color: #34495e;
+        margin-bottom: 5px;
+      }
+
+      .team-score {
+        font-size: 2rem;
+        font-weight: bold;
+        color: #2c3e50;
+        margin-bottom: 10px;
+      }
+
+      .score-control {
+        display: flex;
+        gap: 5px;
+        justify-content: center;
+      }
+
+      .btn-score {
+        padding: 5px 12px;
+        font-size: 0.9rem;
+        font-weight: bold;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        color: white;
+      }
+      .btn-plus {
+        background-color: #2ecc71;
+      }
+      .btn-minus {
+        background-color: #95a5a6;
+      }
+
+      /* Grid Kotak Angka */
       .grid-container {
         display: grid;
         grid-template-columns: repeat(5, 1fr);
         gap: 20px;
         max-width: 1100px;
         width: 100%;
-        perspective: 1000px; /* Untuk efek 3D Flip */
+        margin-top: 25px;
       }
 
       @media (max-width: 900px) {
@@ -70,134 +133,155 @@
         }
       }
 
-      /* Efek Kartu Berbalik (Flip Card) */
-      .card-container {
-        height: 180px;
-        position: relative;
-        cursor: pointer;
-      }
-
-      .card-inner {
-        width: 100%;
-        height: 100%;
-        position: absolute;
-        transform-style: preserve-3d;
-        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        border-radius: 15px;
-      }
-
-      /* Ketika kartu diklik aktifkan kelas flip */
-      .card-container.flipped .card-inner {
-        transform: rotateY(180deg);
-        cursor: default;
-      }
-
-      .card-front,
-      .card-back {
-        position: absolute;
-        width: 100%;
-        height: 100%;
-        backface-visibility: hidden;
+      .quiz-card {
+        height: 120px;
         border-radius: 15px;
         display: flex;
-        flex-direction: column;
         align-items: center;
         justify-content: center;
-        padding: 15px;
-        text-align: center;
-      }
-
-      /* Sisi Depan (Angka Soal) */
-      .card-front {
         font-size: 3rem;
         font-weight: bold;
         color: white;
+        cursor: pointer;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s;
         text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
       }
 
-      .card-container:hover .card-front {
-        transform: scale(1.03);
-        transition: transform 0.2s;
+      .quiz-card:hover:not(.disabled) {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
       }
 
-      /* Sisi Belakang (Pertanyaan + Tombol) */
-      .card-back {
-        background-color: #ffffff;
-        color: #2c3e50;
-        transform: rotateY(180deg);
-        border: 3px solid #34495e;
-        justify-content: space-between;
+      .quiz-card.disabled {
+        cursor: not-allowed;
+        opacity: 0.5;
+        text-shadow: none;
       }
 
-      .question-text {
-        font-size: 0.95rem;
-        font-weight: 600;
-        line-height: 1.4;
-        margin-bottom: 10px;
-        flex-grow: 1;
-        display: flex;
-        align-items: center;
+      /* Pop-up Modal Soal Ukuran Besar (Full View) */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.75);
         justify-content: center;
+        align-items: center;
+        z-index: 1000;
+        padding: 20px;
       }
 
-      /* Tombol Pilihan Benar / Salah */
+      .modal-content {
+        background-color: white;
+        padding: 40px;
+        border-radius: 25px;
+        max-width: 850px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
+        animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      }
+
+      @keyframes scaleUp {
+        from {
+          transform: scale(0.8);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      #modal-title {
+        font-size: 1.8rem;
+        color: #7f8c8d;
+        border-bottom: 2px solid #ecf0f1;
+        padding-bottom: 10px;
+      }
+
+      #modal-question {
+        font-size: 2.2rem; /* Ukuran tulisan soal dibuat sangat besar */
+        font-weight: bold;
+        margin: 40px 0;
+        line-height: 1.5;
+        color: #2c3e50;
+      }
+
+      /* Tombol Jawaban Jumbo */
       .btn-container {
         display: flex;
-        gap: 10px;
-        width: 100%;
+        gap: 25px;
+        justify-content: center;
+        margin-top: 20px;
       }
 
       .btn-choice {
-        flex: 1;
-        padding: 8px 0;
-        font-size: 0.9rem;
+        padding: 20px 50px;
+        font-size: 1.8rem; /* Ukuran teks tombol besar */
         font-weight: bold;
         border: none;
-        border-radius: 8px;
+        border-radius: 15px;
         cursor: pointer;
         color: white;
-        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-        transition: transform 0.1s;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        transition:
+          transform 0.1s,
+          background-color 0.2s;
+        min-width: 200px;
       }
 
       .btn-choice:active {
         transform: scale(0.95);
       }
-
       .btn-true {
         background-color: #2ecc71;
+      }
+      .btn-true:hover {
+        background-color: #27ae60;
       }
       .btn-false {
         background-color: #e74c3c;
       }
-
-      /* Status Hasil Akhir Kartu */
-      .answered-correct .card-inner {
-        transform: rotateY(180deg);
-        box-shadow: none;
-      }
-      .answered-correct .card-back {
-        background-color: #d4edda;
-        border-color: #2ecc71;
-        color: #155724;
+      .btn-false:hover {
+        background-color: #c0392b;
       }
 
-      .answered-wrong .card-inner {
-        transform: rotateY(180deg);
-        box-shadow: none;
+      /* Hasil Feedback di Dalam Modal */
+      .feedback-text {
+        font-size: 3.5rem;
+        font-weight: bold;
+        margin: 30px 0;
       }
-      .answered-wrong .card-back {
-        background-color: #f8d7da;
-        border-color: #e74c3c;
-        color: #721c24;
+      .feedback-correct {
+        color: #2ecc71;
+      }
+      .feedback-wrong {
+        color: #e74c3c;
       }
 
-      /* Efek Partikel Kembang Api */
+      .btn-next {
+        background-color: #34495e;
+        color: white;
+        padding: 12px 35px;
+        font-size: 1.2rem;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        margin-top: 15px;
+        font-weight: bold;
+      }
+
+      /* Efek Kembang Api */
       .particle {
         position: fixed;
-        width: 8px;
-        height: 8px;
+        width: 10px;
+        height: 10px;
         border-radius: 50%;
         pointer-events: none;
         z-index: 9999;
@@ -218,15 +302,68 @@
   </head>
   <body>
     <header>
-      <h1>Kuis Berbalik (Flip) IPS Kelas 7</h1>
-      <p>Pilih nomor, baca pernyataan, lalu tentukan Benar atau Salah!</p>
-      <div class="score-board">Skor Kelompok: <span id="score">0</span></div>
+      <h1>Kuis Rantai Ekonomi Kelas 7</h1>
+      <p>Klik kotak angka untuk memunculkan soal ukuran besar!</p>
+
+      <div class="scoreboard-container">
+        <div class="team-box" id="team-1">
+          <div class="team-name">Kelompok 1</div>
+          <div class="team-score" id="score-team-1">0</div>
+          <div class="score-control">
+            <button class="btn-score btn-minus" onclick="changeScore(1, -10)">
+              -10
+            </button>
+            <button class="btn-score btn-plus" onclick="changeScore(1, 10)">
+              +10
+            </button>
+          </div>
+        </div>
+        <div class="team-box" id="team-2">
+          <div class="team-name">Kelompok 2</div>
+          <div class="team-score" id="score-team-2">0</div>
+          <div class="score-control">
+            <button class="btn-score btn-minus" onclick="changeScore(2, -10)">
+              -10
+            </button>
+            <button class="btn-score btn-plus" onclick="changeScore(2, 10)">
+              +10
+            </button>
+          </div>
+        </div>
+        <div class="team-box" id="team-3">
+          <div class="team-name">Kelompok 3</div>
+          <div class="team-score" id="score-team-3">0</div>
+          <div class="score-control">
+            <button class="btn-score btn-minus" onclick="changeScore(3, -10)">
+              -10
+            </button>
+            <button class="btn-score btn-plus" onclick="changeScore(3, 10)">
+              +10
+            </button>
+          </div>
+        </div>
+        <div class="team-box" id="team-4">
+          <div class="team-name">Kelompok 4</div>
+          <div class="team-score" id="score-team-4">0</div>
+          <div class="score-control">
+            <button class="btn-score btn-minus" onclick="changeScore(4, -10)">
+              -10
+            </button>
+            <button class="btn-score btn-plus" onclick="changeScore(4, 10)">
+              +10
+            </button>
+          </div>
+        </div>
+      </div>
     </header>
 
     <main class="grid-container" id="quiz-grid"></main>
 
+    <div class="modal" id="quiz-modal">
+      <div class="modal-content" id="modal-inside"></div>
+    </div>
+
     <script>
-      // Data 20 Soal Benar/Salah
       const quizData = [
         {
           q: "Permintaan adalah jumlah barang yang ingin dan mampu dibeli oleh konsumen.",
@@ -310,7 +447,7 @@
         },
       ];
 
-      let score = 0;
+      const teamScores = { 1: 0, 2: 0, 3: 0, 4: 0 };
       const colors = [
         "#FF5733",
         "#2bc48a",
@@ -323,8 +460,8 @@
         "#00CED1",
         "#FF1493",
       ];
+      let currentQuestionIndex = null;
 
-      // Efek Suara Digital (Tanpa File Tambahan)
       const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
 
       function playSound(type) {
@@ -344,8 +481,8 @@
           osc.start();
           osc.stop(audioCtx.currentTime + 0.15);
         } else if (type === "correct") {
-          osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // Nada C5
-          osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // Nada E5
+          osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+          osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
           gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
           gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
           osc.start();
@@ -364,75 +501,94 @@
         }
       }
 
-      // Efek Visual Kembang Api Mini
       function createConfetti(e) {
-        for (let i = 0; i < 20; i++) {
+        for (let i = 0; i < 30; i++) {
           const p = document.createElement("div");
           p.className = "particle";
           p.style.backgroundColor =
             colors[Math.floor(Math.random() * colors.length)];
           p.style.left = e.clientX + "px";
           p.style.top = e.clientY + "px";
-          p.style.setProperty("--x", Math.random() * 160 - 80 + "px");
-          p.style.setProperty("--y", Math.random() * 160 - 80 + "px");
+          p.style.setProperty("--x", Math.random() * 260 - 130 + "px");
+          p.style.setProperty("--y", Math.random() * 260 - 130 + "px");
           document.body.appendChild(p);
           setTimeout(() => p.remove(), 600);
         }
       }
 
-      // Generate Grid Kartu
+      function changeScore(teamId, points) {
+        teamScores[teamId] += points;
+        if (teamScores[teamId] < 0) teamScores[teamId] = 0;
+        document.getElementById(`score-team-${teamId}`).innerText =
+          teamScores[teamId];
+      }
+
+      // Generate Grid
       const grid = document.getElementById("quiz-grid");
       quizData.forEach((data, index) => {
-        const container = document.createElement("div");
-        container.className = "card-container";
-        container.id = `card-${index}`;
+        const card = document.createElement("div");
+        card.className = "quiz-card";
+        card.id = `card-${index}`;
+        card.style.backgroundColor = colors[index % colors.length];
+        card.innerText = index + 1;
 
-        container.innerHTML = `
-                <div class="card-inner">
-                    <div class="card-front" style="background-color: ${colors[index % colors.length]}">
-                        ${index + 1}
-                    </div>
-                    <div class="card-back">
-                        <div class="question-text">${data.q}</div>
-                        <div class="btn-container">
-                            <button class="btn-choice btn-true" onclick="submitAnswer(event, ${index}, 'Benar')">BENAR</button>
-                            <button class="btn-choice btn-false" onclick="submitAnswer(event, ${index}, 'Salah')">SALAH</button>
-                        </div>
-                    </div>
+        card.onclick = function () {
+          if (!card.classList.contains("disabled")) {
+            openQuestion(index);
+          }
+        };
+        grid.appendChild(card);
+      });
+
+      // Tampilkan jendela soal besar
+      function openQuestion(index) {
+        currentQuestionIndex = index;
+        playSound("flip");
+
+        const modalInside = document.getElementById("modal-inside");
+        modalInside.innerHTML = `
+                <div id="modal-title">PERTANYAAN NOMOR ${index + 1}</div>
+                <div id="modal-question">${quizData[index].q}</div>
+                <div class="btn-container">
+                    <button class="btn-choice btn-true" onclick="checkAnswer(event, 'Benar')">BENAR</button>
+                    <button class="btn-choice btn-false" onclick="checkAnswer(event, 'Salah')">SALAH</button>
                 </div>
             `;
 
-        // Klik kartu untuk berbalik (flip)
-        container.onclick = function (e) {
-          if (!container.classList.contains("flipped")) {
-            playSound("flip");
-            container.classList.add("flipped");
-          }
-        };
+        document.getElementById("quiz-modal").style.display = "flex";
+      }
 
-        grid.appendChild(container);
-      });
-
-      // Proses Pengecekan Jawaban
-      function submitAnswer(event, index, playerAnswer) {
-        event.stopPropagation(); // Mencegah konflik efek klik kartu
-        const container = document.getElementById(`card-${index}`);
-        const correctAnswer = quizData[index].a;
+      // Cek Jawaban di dalam Pop-up
+      function checkAnswer(event, playerAnswer) {
+        const correctAnswer = quizData[currentQuestionIndex].a;
+        const modalInside = document.getElementById("modal-inside");
+        const card = document.getElementById(`card-${currentQuestionIndex}`);
 
         if (playerAnswer === correctAnswer) {
           playSound("correct");
           createConfetti(event);
-          score += 10;
-          document.getElementById("score").innerText = score;
-          container.className = "card-container answered-correct";
-          container.querySelector(".card-back").innerHTML =
-            `<div class="question-text" style="font-size:2rem;">🎉 BENAR!<br><span style="font-size:1rem;">+10 Poin</span></div>`;
+          modalInside.innerHTML = `
+                    <div class="feedback-text feedback-correct">🎉 JAWABAN BENAR!</div>
+                    <p style="font-size:1.2rem; color:#7f8c8d;">Berikan poin pada tim yang menjawab.</p>
+                    <button class="btn-next" onclick="closeModal(true)">Lanjutkan</button>
+                `;
         } else {
           playSound("wrong");
-          container.className = "card-container answered-wrong";
-          container.querySelector(".card-back").innerHTML =
-            `<div class="question-text" style="font-size:2rem;">❌ SALAH</div>`;
+          modalInside.innerHTML = `
+                    <div class="feedback-text feedback-wrong">❌ JAWABAN SALAH</div>
+                    <p style="font-size:1.2rem; color:#7f8c8d;">Kesempatan beralih atau lanjut ke tim berikutnya.</p>
+                    <button class="btn-next" onclick="closeModal(false)">Lanjutkan</button>
+                `;
         }
+      }
+
+      function closeModal(isCorrect) {
+        const card = document.getElementById(`card-${currentQuestionIndex}`);
+        card.classList.add("disabled");
+        card.style.backgroundColor = isCorrect ? "#2ecc71" : "#e74c3c";
+        card.innerText = isCorrect ? "✅" : "❌";
+
+        document.getElementById("quiz-modal").style.display = "none";
       }
     </script>
   </body>
