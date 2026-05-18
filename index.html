@@ -3,40 +3,86 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kuis Rantai Ekonomi Kelas 7 (Otomatis Berurutan)</title>
+    <title>Peranan Masyarakat dalam Rantai Ekonomi</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Quicksand:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+
     <style>
+      :root {
+        --font-primary: "Poppins", sans-serif;
+        --font-secondary: "Quicksand", sans-serif;
+      }
+
       * {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
-        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
       }
 
       body {
-        background-color: #f0f4f8;
-        color: #333;
+        /* Latar belakang dengan efek gradien lembut dan pola abstrak */
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        background-attachment: fixed;
+        color: #2d3436;
         padding: 20px;
         display: flex;
         flex-direction: column;
         align-items: center;
-        overflow-x: hidden;
+        min-height: 100vh;
+        font-family: var(--font-secondary);
+      }
+
+      /* Dekorasi Latar Belakang (Abstract Shapes) */
+      body::before {
+        content: "";
+        position: fixed;
+        top: -10%;
+        right: -10%;
+        width: 400px;
+        height: 400px;
+        background: rgba(52, 152, 219, 0.1);
+        border-radius: 50%;
+        z-index: -1;
+      }
+
+      body::after {
+        content: "";
+        position: fixed;
+        bottom: -5%;
+        left: -5%;
+        width: 300px;
+        height: 300px;
+        background: rgba(230, 126, 34, 0.1);
+        border-radius: 50%;
+        z-index: -1;
       }
 
       header {
         text-align: center;
-        margin-bottom: 25px;
+        margin-bottom: 30px;
         width: 100%;
         max-width: 1100px;
       }
 
       header h1 {
+        font-family: var(--font-primary);
         color: #2c3e50;
-        margin-bottom: 5px;
+        font-size: 2.8rem;
+        letter-spacing: -1px;
+        margin-bottom: 10px;
       }
 
       header p {
-        color: #7f8c8d;
-        font-size: 1.1rem;
+        color: #57606f;
+        font-size: 1.15rem;
+        max-width: 850px;
+        margin: 0 auto;
+        line-height: 1.6;
+        font-weight: 500;
       }
 
       /* Papan Skor 4 Kelompok */
@@ -45,7 +91,7 @@
         grid-template-columns: repeat(4, 1fr);
         gap: 15px;
         width: 100%;
-        margin-top: 20px;
+        margin-top: 30px;
       }
 
       @media (max-width: 600px) {
@@ -55,14 +101,14 @@
       }
 
       .team-box {
-        background-color: white;
+        background-color: rgba(255, 255, 255, 0.9);
         padding: 15px;
-        border-radius: 15px;
+        border-radius: 20px;
         text-align: center;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        border-bottom: 5px solid #ccc;
-        transition: all 0.3s ease;
-        position: relative;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.05);
+        border-bottom: 6px solid #dfe6e9;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        backdrop-filter: blur(5px);
       }
 
       #team-1 {
@@ -78,36 +124,50 @@
         border-bottom-color: #16a085;
       }
 
-      /* Gaya untuk Tim yang sedang aktif/mendapat giliran */
       .team-box.active {
-        transform: scale(1.05);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        background-color: #fffde7;
-        border-top: 4px solid #f1c40f;
+        transform: scale(1.08) translateY(-5px);
+        background-color: #ffffff;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+        border-top: 5px solid #f1c40f;
       }
 
       .turn-indicator {
         display: none;
-        font-size: 0.8rem;
+        font-size: 0.75rem;
         color: #f39c12;
-        font-weight: bold;
-        margin-top: 5px;
+        font-weight: 700;
+        margin-top: 8px;
+        font-family: var(--font-primary);
+        text-transform: uppercase;
       }
 
       .team-box.active .turn-indicator {
         display: block;
+        animation: pulse 1.5s infinite;
+      }
+
+      @keyframes pulse {
+        0% {
+          opacity: 0.5;
+        }
+        50% {
+          opacity: 1;
+        }
+        100% {
+          opacity: 0.5;
+        }
       }
 
       .team-name {
+        font-family: var(--font-primary);
         font-size: 1.1rem;
-        font-weight: bold;
         color: #34495e;
         margin-bottom: 5px;
       }
 
       .team-score {
-        font-size: 2rem;
-        font-weight: bold;
+        font-size: 2.2rem;
+        font-weight: 700;
         color: #2c3e50;
       }
 
@@ -118,7 +178,7 @@
         gap: 20px;
         max-width: 1100px;
         width: 100%;
-        margin-top: 25px;
+        margin-top: 30px;
       }
 
       @media (max-width: 900px) {
@@ -133,34 +193,33 @@
       }
 
       .quiz-card {
-        height: 120px;
-        border-radius: 15px;
+        height: 130px;
+        border-radius: 20px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 3rem;
-        font-weight: bold;
+        font-family: var(--font-primary);
+        font-size: 3.5rem;
         color: white;
         cursor: pointer;
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        transition:
-          transform 0.2s,
-          box-shadow 0.2s;
-        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
       }
 
       .quiz-card:hover:not(.disabled) {
-        transform: translateY(-5px);
-        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.25);
+        transform: scale(1.05) rotate(2deg);
+        box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
       }
 
       .quiz-card.disabled {
         cursor: not-allowed;
-        opacity: 0.5;
+        opacity: 0.4;
+        filter: grayscale(80%);
         text-shadow: none;
       }
 
-      /* Pop-up Modal Soal Ukuran Besar */
+      /* Modal / Pop-up Soal */
       .modal {
         display: none;
         position: fixed;
@@ -168,96 +227,102 @@
         left: 0;
         width: 100%;
         height: 100%;
-        background-color: rgba(0, 0, 0, 0.75);
+        background-color: rgba(44, 62, 80, 0.9);
         justify-content: center;
         align-items: center;
         z-index: 1000;
         padding: 20px;
+        backdrop-filter: blur(8px);
       }
 
       .modal-content {
         background-color: white;
-        padding: 40px;
-        border-radius: 25px;
-        max-width: 850px;
+        padding: 50px;
+        border-radius: 30px;
+        max-width: 900px;
         width: 100%;
         text-align: center;
-        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4);
-        animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+        animation: modalSlide 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       }
 
-      @keyframes scaleUp {
+      @keyframes modalSlide {
         from {
-          transform: scale(0.8);
+          transform: translateY(50px) scale(0.9);
           opacity: 0;
         }
         to {
-          transform: scale(1);
+          transform: translateY(0) scale(1);
           opacity: 1;
         }
       }
 
       #modal-title {
-        font-size: 1.6rem;
-        color: #e67e22;
-        font-weight: bold;
-        border-bottom: 2px solid #ecf0f1;
-        padding-bottom: 10px;
+        font-family: var(--font-primary);
+        font-size: 1.4rem;
+        color: #95a5a6;
+        margin-bottom: 20px;
+        letter-spacing: 2px;
       }
 
       #modal-question {
-        font-size: 2.2rem;
-        font-weight: bold;
+        font-size: 2.5rem;
+        font-weight: 700;
         margin: 40px 0;
-        line-height: 1.5;
+        line-height: 1.4;
         color: #2c3e50;
       }
 
-      /* Tombol Jawaban Jumbo */
+      /* Tombol Pilihan Jumbo */
       .btn-container {
         display: flex;
-        gap: 25px;
+        gap: 20px;
         justify-content: center;
         margin-top: 20px;
       }
 
       .btn-choice {
-        padding: 20px 50px;
+        padding: 20px 45px;
+        font-family: var(--font-primary);
         font-size: 1.8rem;
-        font-weight: bold;
         border: none;
-        border-radius: 15px;
+        border-radius: 20px;
         cursor: pointer;
         color: white;
-        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        transition:
-          transform 0.1s,
-          background-color 0.2s;
-        min-width: 200px;
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        transition: all 0.2s;
+        min-width: 220px;
       }
 
-      .btn-choice:active {
-        transform: scale(0.95);
+      .btn-choice:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
       }
+
       .btn-true {
-        background-color: #2ecc71;
-      }
-      .btn-true:hover {
-        background-color: #27ae60;
+        background: linear-gradient(135deg, #2ecc71, #27ae60);
       }
       .btn-false {
-        background-color: #e74c3c;
-      }
-      .btn-false:hover {
-        background-color: #c0392b;
+        background: linear-gradient(135deg, #e74c3c, #c0392b);
       }
 
-      /* Hasil Feedback di Dalam Modal */
       .feedback-text {
-        font-size: 3.5rem;
-        font-weight: bold;
+        font-family: var(--font-primary);
+        font-size: 4rem;
         margin: 30px 0;
+        animation: bounce 0.5s ease;
       }
+
+      @keyframes bounce {
+        0%,
+        100% {
+          transform: scale(1);
+        }
+        50% {
+          transform: scale(1.1);
+        }
+      }
+
       .feedback-correct {
         color: #2ecc71;
       }
@@ -266,35 +331,35 @@
       }
 
       .btn-next {
-        background-color: #34495e;
+        background-color: #2c3e50;
         color: white;
-        padding: 12px 35px;
-        font-size: 1.2rem;
+        padding: 15px 40px;
+        font-family: var(--font-primary);
+        font-size: 1.3rem;
         border: none;
-        border-radius: 8px;
+        border-radius: 12px;
         cursor: pointer;
-        margin-top: 15px;
-        font-weight: bold;
+        margin-top: 20px;
       }
 
       /* Efek Kembang Api */
       .particle {
         position: fixed;
-        width: 10px;
-        height: 10px;
-        border-radius: 50%;
+        width: 12px;
+        height: 12px;
+        border-radius: 2px;
         pointer-events: none;
         z-index: 9999;
-        animation: explode 0.6s ease-out forwards;
+        animation: explode 0.7s ease-out forwards;
       }
 
       @keyframes explode {
         0% {
-          transform: translate(0, 0) scale(1);
+          transform: translate(0, 0) rotate(0deg);
           opacity: 1;
         }
         100% {
-          transform: translate(var(--x), var(--y)) scale(0);
+          transform: translate(var(--x), var(--y)) rotate(360deg) scale(0);
           opacity: 0;
         }
       }
@@ -302,8 +367,11 @@
   </head>
   <body>
     <header>
-      <h1>Kuis Rantai Ekonomi Kelas 7</h1>
-      <p>Kotak kuning di atas menandakan tim yang gilirannya menjawab!</p>
+      <h1>Peranan Masyarakat dalam Rantai Ekonomi</h1>
+      <p>
+        Benar atau Salah? Yuk, tes pemahamanmu tentang Permintaan, Penawaran,
+        dan Rantai Ekonomi. Baca teliti, jawab cepat, jangan sampai terkecoh ya!
+      </p>
 
       <div class="scoreboard-container">
         <div class="team-box active" id="team-1">
@@ -420,18 +488,18 @@
       ];
 
       const teamScores = { 1: 0, 2: 0, 3: 0, 4: 0 };
-      let currentTeamTurn = 1; // Permainan dimulai dari Tim 1
+      let currentTeamTurn = 1;
       const colors = [
-        "#FF5733",
-        "#2bc48a",
-        "#3357FF",
-        "#dbca12",
-        "#FF33F3",
-        "#33FFF0",
-        "#FFA500",
-        "#8A2BE2",
-        "#00CED1",
-        "#FF1493",
+        "#3498db",
+        "#2ecc71",
+        "#9b59b6",
+        "#f1c40f",
+        "#e67e22",
+        "#1abc9c",
+        "#e74c3c",
+        "#34495e",
+        "#8e44ad",
+        "#2c3e50",
       ];
       let currentQuestionIndex = null;
 
@@ -475,21 +543,20 @@
       }
 
       function createConfetti(e) {
-        for (let i = 0; i < 30; i++) {
+        for (let i = 0; i < 40; i++) {
           const p = document.createElement("div");
           p.className = "particle";
           p.style.backgroundColor =
             colors[Math.floor(Math.random() * colors.length)];
           p.style.left = e.clientX + "px";
           p.style.top = e.clientY + "px";
-          p.style.setProperty("--x", Math.random() * 260 - 130 + "px");
-          p.style.setProperty("--y", Math.random() * 260 - 130 + "px");
+          p.style.setProperty("--x", Math.random() * 300 - 150 + "px");
+          p.style.setProperty("--y", Math.random() * 300 - 150 + "px");
           document.body.appendChild(p);
-          setTimeout(() => p.remove(), 600);
+          setTimeout(() => p.remove(), 700);
         }
       }
 
-      // Generate Grid
       const grid = document.getElementById("quiz-grid");
       quizData.forEach((data, index) => {
         const card = document.createElement("div");
@@ -506,7 +573,6 @@
         grid.appendChild(card);
       });
 
-      // Tampilkan jendela soal besar
       function openQuestion(index) {
         currentQuestionIndex = index;
         playSound("flip");
@@ -524,7 +590,6 @@
         document.getElementById("quiz-modal").style.display = "flex";
       }
 
-      // Cek Jawaban otomatis
       function checkAnswer(event, playerAnswer) {
         const correctAnswer = quizData[currentQuestionIndex].a;
         const modalInside = document.getElementById("modal-inside");
@@ -533,21 +598,20 @@
           playSound("correct");
           createConfetti(event);
 
-          // Tambah skor ke tim aktif secara otomatis
           teamScores[currentTeamTurn] += 10;
           document.getElementById(`score-team-${currentTeamTurn}`).innerText =
             teamScores[currentTeamTurn];
 
           modalInside.innerHTML = `
-                    <div class="feedback-text feedback-correct">🎉 JAWABAN BENAR!</div>
-                    <p style="font-size:1.4rem; color:#2c3e50;">Kelompok ${currentTeamTurn} mendapat +10 Poin!</p>
+                    <div class="feedback-text feedback-correct">🎉 BENAR!</div>
+                    <p style="font-size:1.5rem; color:#2c3e50; font-weight:700;">Kelompok ${currentTeamTurn} mendapat +10 Poin!</p>
                     <button class="btn-next" onclick="closeModal(true)">Lanjutkan</button>
                 `;
         } else {
           playSound("wrong");
           modalInside.innerHTML = `
-                    <div class="feedback-text feedback-wrong">❌ JAWABAN SALAH</div>
-                    <p style="font-size:1.4rem; color:#2c3e50;">Kelompok ${currentTeamTurn} tidak mendapat poin.</p>
+                    <div class="feedback-text feedback-wrong">❌ SALAH</div>
+                    <p style="font-size:1.5rem; color:#2c3e50; font-weight:700;">Kelompok ${currentTeamTurn} tidak mendapat poin.</p>
                     <button class="btn-next" onclick="closeModal(false)">Lanjutkan</button>
                 `;
         }
@@ -559,10 +623,8 @@
         card.style.backgroundColor = isCorrect ? "#2ecc71" : "#e74c3c";
         card.innerText = isCorrect ? "✅" : "❌";
 
-        // Sembunyikan pop-up
         document.getElementById("quiz-modal").style.display = "none";
 
-        // Pindahkan giliran ke tim berikutnya secara berurutan (1 -> 2 -> 3 -> 4 -> 1)
         document
           .getElementById(`team-${currentTeamTurn}`)
           .classList.remove("active");
