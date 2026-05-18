@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kuis Rantai Ekonomi Kelas 7</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f0f4f8;
+        color: #333;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        overflow-x: hidden;
+      }
+
+      header {
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      header h1 {
+        color: #2c3e50;
+        margin-bottom: 5px;
+      }
+
+      header p {
+        color: #7f8c8d;
+        font-size: 1.1rem;
+      }
+
+      .score-board {
+        margin-top: 15px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        background-color: #fff;
+        padding: 10px 20px;
+        border-radius: 50px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        color: #2980b9;
+        display: inline-block;
+      }
+
+      /* Grid Utama */
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(5, 1fr);
+        gap: 20px;
+        max-width: 1100px;
+        width: 100%;
+        perspective: 1000px; /* Untuk efek 3D Flip */
+      }
+
+      @media (max-width: 900px) {
+        .grid-container {
+          grid-template-columns: repeat(4, 1fr);
+        }
+      }
+      @media (max-width: 700px) {
+        .grid-container {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+
+      /* Efek Kartu Berbalik (Flip Card) */
+      .card-container {
+        height: 180px;
+        position: relative;
+        cursor: pointer;
+      }
+
+      .card-inner {
+        width: 100%;
+        height: 100%;
+        position: absolute;
+        transform-style: preserve-3d;
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        border-radius: 15px;
+      }
+
+      /* Ketika kartu diklik aktifkan kelas flip */
+      .card-container.flipped .card-inner {
+        transform: rotateY(180deg);
+        cursor: default;
+      }
+
+      .card-front,
+      .card-back {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        backface-visibility: hidden;
+        border-radius: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 15px;
+        text-align: center;
+      }
+
+      /* Sisi Depan (Angka Soal) */
+      .card-front {
+        font-size: 3rem;
+        font-weight: bold;
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+      }
+
+      .card-container:hover .card-front {
+        transform: scale(1.03);
+        transition: transform 0.2s;
+      }
+
+      /* Sisi Belakang (Pertanyaan + Tombol) */
+      .card-back {
+        background-color: #ffffff;
+        color: #2c3e50;
+        transform: rotateY(180deg);
+        border: 3px solid #34495e;
+        justify-content: space-between;
+      }
+
+      .question-text {
+        font-size: 0.95rem;
+        font-weight: 600;
+        line-height: 1.4;
+        margin-bottom: 10px;
+        flex-grow: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      /* Tombol Pilihan Benar / Salah */
+      .btn-container {
+        display: flex;
+        gap: 10px;
+        width: 100%;
+      }
+
+      .btn-choice {
+        flex: 1;
+        padding: 8px 0;
+        font-size: 0.9rem;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        color: white;
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.1s;
+      }
+
+      .btn-choice:active {
+        transform: scale(0.95);
+      }
+
+      .btn-true {
+        background-color: #2ecc71;
+      }
+      .btn-false {
+        background-color: #e74c3c;
+      }
+
+      /* Status Hasil Akhir Kartu */
+      .answered-correct .card-inner {
+        transform: rotateY(180deg);
+        box-shadow: none;
+      }
+      .answered-correct .card-back {
+        background-color: #d4edda;
+        border-color: #2ecc71;
+        color: #155724;
+      }
+
+      .answered-wrong .card-inner {
+        transform: rotateY(180deg);
+        box-shadow: none;
+      }
+      .answered-wrong .card-back {
+        background-color: #f8d7da;
+        border-color: #e74c3c;
+        color: #721c24;
+      }
+
+      /* Efek Partikel Kembang Api */
+      .particle {
+        position: fixed;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 9999;
+        animation: explode 0.6s ease-out forwards;
+      }
+
+      @keyframes explode {
+        0% {
+          transform: translate(0, 0) scale(1);
+          opacity: 1;
+        }
+        100% {
+          transform: translate(var(--x), var(--y)) scale(0);
+          opacity: 0;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>Kuis Berbalik (Flip) IPS Kelas 7</h1>
+      <p>Pilih nomor, baca pernyataan, lalu tentukan Benar atau Salah!</p>
+      <div class="score-board">Skor Kelompok: <span id="score">0</span></div>
+    </header>
+
+    <main class="grid-container" id="quiz-grid"></main>
+
+    <script>
+      // Data 20 Soal Benar/Salah
+      const quizData = [
+        {
+          q: "Permintaan adalah jumlah barang yang ingin dan mampu dibeli oleh konsumen.",
+          a: "Benar",
+        },
+        {
+          q: "Sesuai hukum permintaan, jika harga barang naik, maka jumlah permintaan akan meningkat.",
+          a: "Salah",
+        },
+        {
+          q: "Kurva permintaan digambarkan dengan garis dari kiri atas ke kanan bawah.",
+          a: "Benar",
+        },
+        {
+          q: "Penawaran adalah jumlah barang yang ditawarkan atau dijual oleh produsen.",
+          a: "Benar",
+        },
+        {
+          q: "Jika harga barang turun, penjual akan semakin semangat menawarkan lebih banyak barang.",
+          a: "Salah",
+        },
+        {
+          q: "Kurva penawaran digambarkan dengan garis dari kiri bawah ke kanan atas.",
+          a: "Benar",
+        },
+        {
+          q: "Harga keseimbangan adalah harga kesepakatan antara penjual dan pembeli.",
+          a: "Benar",
+        },
+        {
+          q: "Peran utama masyarakat sebagai produsen adalah menciptakan permintaan barang.",
+          a: "Salah",
+        },
+        {
+          q: "Ojek online yang mengantar makanan termasuk ke dalam peran distributor.",
+          a: "Benar",
+        },
+        {
+          q: "Permintaan absolut adalah permintaan yang sudah disertai dengan uang dan daya beli.",
+          a: "Salah",
+        },
+        {
+          q: "Permintaan pasar adalah gabungan dari permintaan seluruh orang di dalam pasar.",
+          a: "Benar",
+        },
+        {
+          q: "Jika pendapatan atau gaji orang tua naik, biasanya jumlah permintaan jajan akan turun.",
+          a: "Salah",
+        },
+        {
+          q: "Es kulkul yang viral membuat permintaan terhadap es tersebut menjadi meningkat karena faktor selera.",
+          a: "Benar",
+        },
+        {
+          q: "Jika harga daging ayam naik mahal, maka permintaan terhadap tempe (barang pengganti) akan turun.",
+          a: "Salah",
+        },
+        {
+          q: "Menggunakan mesin canggih untuk membuat cilok dapat meningkatkan jumlah penawaran barang.",
+          a: "Benar",
+        },
+        {
+          q: "Bencana alam seperti banjir dapat menyebabkan penawaran hasil pertanian di pasar meningkat.",
+          a: "Salah",
+        },
+        {
+          q: "Jika harga pasar berada di bawah harga keseimbangan, maka akan terjadi kelangkaan barang.",
+          a: "Benar",
+        },
+        {
+          q: "Menimbun barang pokok saat langka agar bisa dijual mahal termasuk contoh perilaku ekonomi yang adil.",
+          a: "Salah",
+        },
+        {
+          q: "Membayar gorengan di kantin sesuai jumlah yang kita makan adalah wujud perilaku jujur dan anti-korupsi.",
+          a: "Benar",
+        },
+        {
+          q: "Jika pedagang mengurangi timbangan saat menjual barang, maka suasana pasar akan tetap stabil dan aman.",
+          a: "Salah",
+        },
+      ];
+
+      let score = 0;
+      const colors = [
+        "#FF5733",
+        "#2bc48a",
+        "#3357FF",
+        "#dbca12",
+        "#FF33F3",
+        "#33FFF0",
+        "#FFA500",
+        "#8A2BE2",
+        "#00CED1",
+        "#FF1493",
+      ];
+
+      // Efek Suara Digital (Tanpa File Tambahan)
+      const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+      function playSound(type) {
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+
+        if (type === "flip") {
+          osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+          osc.frequency.exponentialRampToValueAtTime(
+            600,
+            audioCtx.currentTime + 0.15,
+          );
+          gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+          gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.15);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.15);
+        } else if (type === "correct") {
+          osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // Nada C5
+          osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // Nada E5
+          gain.gain.setValueAtTime(0.2, audioCtx.currentTime);
+          gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.3);
+        } else if (type === "wrong") {
+          osc.type = "sawtooth";
+          osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+          osc.frequency.linearRampToValueAtTime(
+            80,
+            audioCtx.currentTime + 0.25,
+          );
+          gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+          gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.25);
+          osc.start();
+          osc.stop(audioCtx.currentTime + 0.25);
+        }
+      }
+
+      // Efek Visual Kembang Api Mini
+      function createConfetti(e) {
+        for (let i = 0; i < 20; i++) {
+          const p = document.createElement("div");
+          p.className = "particle";
+          p.style.backgroundColor =
+            colors[Math.floor(Math.random() * colors.length)];
+          p.style.left = e.clientX + "px";
+          p.style.top = e.clientY + "px";
+          p.style.setProperty("--x", Math.random() * 160 - 80 + "px");
+          p.style.setProperty("--y", Math.random() * 160 - 80 + "px");
+          document.body.appendChild(p);
+          setTimeout(() => p.remove(), 600);
+        }
+      }
+
+      // Generate Grid Kartu
+      const grid = document.getElementById("quiz-grid");
+      quizData.forEach((data, index) => {
+        const container = document.createElement("div");
+        container.className = "card-container";
+        container.id = `card-${index}`;
+
+        container.innerHTML = `
+                <div class="card-inner">
+                    <div class="card-front" style="background-color: ${colors[index % colors.length]}">
+                        ${index + 1}
+                    </div>
+                    <div class="card-back">
+                        <div class="question-text">${data.q}</div>
+                        <div class="btn-container">
+                            <button class="btn-choice btn-true" onclick="submitAnswer(event, ${index}, 'Benar')">BENAR</button>
+                            <button class="btn-choice btn-false" onclick="submitAnswer(event, ${index}, 'Salah')">SALAH</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+
+        // Klik kartu untuk berbalik (flip)
+        container.onclick = function (e) {
+          if (!container.classList.contains("flipped")) {
+            playSound("flip");
+            container.classList.add("flipped");
+          }
+        };
+
+        grid.appendChild(container);
+      });
+
+      // Proses Pengecekan Jawaban
+      function submitAnswer(event, index, playerAnswer) {
+        event.stopPropagation(); // Mencegah konflik efek klik kartu
+        const container = document.getElementById(`card-${index}`);
+        const correctAnswer = quizData[index].a;
+
+        if (playerAnswer === correctAnswer) {
+          playSound("correct");
+          createConfetti(event);
+          score += 10;
+          document.getElementById("score").innerText = score;
+          container.className = "card-container answered-correct";
+          container.querySelector(".card-back").innerHTML =
+            `<div class="question-text" style="font-size:2rem;">🎉 BENAR!<br><span style="font-size:1rem;">+10 Poin</span></div>`;
+        } else {
+          playSound("wrong");
+          container.className = "card-container answered-wrong";
+          container.querySelector(".card-back").innerHTML =
+            `<div class="question-text" style="font-size:2rem;">❌ SALAH</div>`;
+        }
+      }
+    </script>
+  </body>
+</html>
